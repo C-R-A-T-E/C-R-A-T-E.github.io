@@ -1,0 +1,755 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Detangling Beagle Bone AI Pin Multiplexing</title><style>
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR'; }
+
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR'; }
+
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, YuMincho, "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "Songti TC", "Songti SC", "SimSun", "Nanum Myeongjo", NanumMyeongjo, Batang, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC', 'Noto Sans CJK KR'; }
+
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC', 'Noto Sans Mono CJK KR'; }
+
+.highlight-default {
+}
+.highlight-gray {
+	color: rgb(155,154,151);
+}
+.highlight-brown {
+	color: rgb(100,71,58);
+}
+.highlight-orange {
+	color: rgb(217,115,13);
+}
+.highlight-yellow {
+	color: rgb(223,171,1);
+}
+.highlight-teal {
+	color: rgb(15,123,108);
+}
+.highlight-blue {
+	color: rgb(11,110,153);
+}
+.highlight-purple {
+	color: rgb(105,64,165);
+}
+.highlight-pink {
+	color: rgb(173,26,114);
+}
+.highlight-red {
+	color: rgb(224,62,62);
+}
+.highlight-gray_background {
+	background: rgb(235,236,237);
+}
+.highlight-brown_background {
+	background: rgb(233,229,227);
+}
+.highlight-orange_background {
+	background: rgb(250,235,221);
+}
+.highlight-yellow_background {
+	background: rgb(251,243,219);
+}
+.highlight-teal_background {
+	background: rgb(221,237,234);
+}
+.highlight-blue_background {
+	background: rgb(221,235,241);
+}
+.highlight-purple_background {
+	background: rgb(234,228,242);
+}
+.highlight-pink_background {
+	background: rgb(244,223,235);
+}
+.highlight-red_background {
+	background: rgb(251,228,228);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(55, 53, 47, 0.6);
+	fill: rgba(55, 53, 47, 0.6);
+}
+.block-color-brown {
+	color: rgb(100,71,58);
+	fill: rgb(100,71,58);
+}
+.block-color-orange {
+	color: rgb(217,115,13);
+	fill: rgb(217,115,13);
+}
+.block-color-yellow {
+	color: rgb(223,171,1);
+	fill: rgb(223,171,1);
+}
+.block-color-teal {
+	color: rgb(15,123,108);
+	fill: rgb(15,123,108);
+}
+.block-color-blue {
+	color: rgb(11,110,153);
+	fill: rgb(11,110,153);
+}
+.block-color-purple {
+	color: rgb(105,64,165);
+	fill: rgb(105,64,165);
+}
+.block-color-pink {
+	color: rgb(173,26,114);
+	fill: rgb(173,26,114);
+}
+.block-color-red {
+	color: rgb(224,62,62);
+	fill: rgb(224,62,62);
+}
+.block-color-gray_background {
+	background: rgb(235,236,237);
+}
+.block-color-brown_background {
+	background: rgb(233,229,227);
+}
+.block-color-orange_background {
+	background: rgb(250,235,221);
+}
+.block-color-yellow_background {
+	background: rgb(251,243,219);
+}
+.block-color-teal_background {
+	background: rgb(221,237,234);
+}
+.block-color-blue_background {
+	background: rgb(221,235,241);
+}
+.block-color-purple_background {
+	background: rgb(234,228,242);
+}
+.block-color-pink_background {
+	background: rgb(244,223,235);
+}
+.block-color-red_background {
+	background: rgb(251,228,228);
+}
+.select-value-color-default { background-color: rgba(206,205,202,0.5); }
+.select-value-color-gray { background-color: rgba(155,154,151, 0.4); }
+.select-value-color-brown { background-color: rgba(140,46,0,0.2); }
+.select-value-color-orange { background-color: rgba(245,93,0,0.2); }
+.select-value-color-yellow { background-color: rgba(233,168,0,0.2); }
+.select-value-color-green { background-color: rgba(0,135,107,0.2); }
+.select-value-color-blue { background-color: rgba(0,120,223,0.2); }
+.select-value-color-purple { background-color: rgba(103,36,222,0.2); }
+.select-value-color-pink { background-color: rgba(221,0,129,0.2); }
+.select-value-color-red { background-color: rgba(255,0,26,0.2); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="35a22869-f2a4-495b-a761-f5b631a5182d" class="page sans"><header><h1 class="page-title">Detangling Beagle Bone AI Pin Multiplexing</h1></header><div class="page-body"><p id="02988f1b-bc48-4dfc-a20f-525aabd510c2" class="">Blinking an LED from software (including PRU) on a Beagle Bone AI</p><p id="195c0eb4-ba1a-4184-a6b4-d21b98bcc1e0" class="">
+</p><hr id="fbb5fa14-e6e7-4015-a307-f6de7492e78b"/><nav id="16bed64d-176d-4830-b426-29ae484a5398" class="block-color-gray table_of_contents"><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#e24c41f9-e7c7-4561-9a3e-8a63f1ddcd90">Overview</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#bdf25322-8ef2-4031-ac93-4e34ae48db8a">Texas Instruments AM572X Sitara Processor</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#2455be03-4fa5-4fe1-ad1c-217e7cde7235">Chip Balls (Pins)</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1a4dec79-bdb7-49fb-8fbe-7f321d6ada84">What Signals are possible on each ball (pin)</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#fabf7da7-fd69-4e11-91e3-db29a402041d">Short detour to discuss GPIO (we will need this)</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#2f1e5c24-2aaf-40c5-988d-1b1d362e4843">Beagle Board AI P8 and P9 Headers</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#9c179622-ae81-4cba-b0df-498bc6c90d43">So, where do I plug in the LED?</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#ac0b057e-0f0d-4e2e-aed9-344cd8d0326a">Time To Write Some Software</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#9bd96b5a-da71-4a01-9f06-8c761632cc81">Great, I plugged in an LED.  How do I make it blink?</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#1e30f08c-d44d-4bd7-9c8b-c5688a911d69">Blinking LED from Command line </a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#f4821247-4972-4932-9f2e-a24d65fd88de">Blinking LED Method 1 - write to /sys/class/gpio</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#3e4594d4-ac8a-4943-bb8e-3cbe02801946">Blinking LED Method 2 - mmap GPIO registers</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#f6ab2772-e49a-42e3-a5ab-fb5e279cad72">Now I want to flash the LED from the PRU</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#5c4e5c42-6f45-4309-ba1c-2b5525e3f1b7">Blinking LED Method 3 - PRU share memory GPIO registers</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#2a8b6b43-372d-479b-98b0-c5c54161ec30">Blinking LED Method 4 - PRU Enhanced GPIO</a></div><div class="table_of_contents-item table_of_contents-indent-0"><a class="table_of_contents-link" href="#c8486ba2-6af2-4608-a54d-fe93277b992f">The signal I need is not the default, now what?</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#5d95f6d3-fbf1-461b-a185-35f9f76883dd">What is MUXMODE?</a></div><div class="table_of_contents-item table_of_contents-indent-1"><a class="table_of_contents-link" href="#0aa5102d-eb63-45bb-9b29-e9252710249d">How do Choose Which Signal is used on which ball?</a></div></nav><h1 id="e24c41f9-e7c7-4561-9a3e-8a63f1ddcd90" class="">Overview</h1><hr id="2ca6a294-2564-4f9a-ac97-68dad34e6207"/><p id="99ea6107-f3f0-49a1-94ea-e38cc6185223" class="">So you just bought the new Beagle Board AI SBC and you want to start doing cool things with it.  Of course the first thing you need to do is go through a &quot;Getting Started&quot; guide that talks about getting Linux installed / updated and how to get access to your new computer.</p><p id="ba46ef96-13d2-48a3-a52c-cd190a07bb0b" class="">However, once you get that done, you want to start programming something.  A typical embedded systems &quot;hello world&quot; application is to connect and LED to your hardware and then write a program to blink it on and off.  When this document was written, the Beagle Bone AI had just came out and while there were plenty of documents on how to blink an LED connected to other Beagle Bone SBC&#x27;s, there was not really an easy reference for how to do that on the Beagle Bone AI, and it was even worse if you wanted to do this on one of the embedded PRU processors.</p><p id="b5a05de7-0666-41e4-9a52-ad1703ff3a29" class="">Some day it will be easier, right now for the Beagle Bone Black that is Adafruit Python BB IO Library and there is also BeagleBone Black I/O (GPIO) Library for C and there are many others, including bonescript, etc, etc.  However, because the Beagle Bone AI is a generation beyond the Beagle Bone Black, none of these current systems can help you.  Again, some day it will be different, but in many ways, this can be a good thing, because now you can really dig into what is going on in the GPIO / Pinmuxing systems.  Then when things are easier, you will actually know what is going on under the covers.</p><p id="ca8d0ff6-6005-4be7-8466-c14701ffa80b" class="">One of the main barriers to the LED Blinking task being sample is &quot;pin muxing&quot; or pin multiplexing.  You want to connect an LED to one of the expansion headers (P8 / P9) but it is near impossible to understand what expansion header pin to connect the LED to and how to drive that pin from you sample code.</p><p id="554fda77-e17a-432d-b3d6-1246dfac5ccc" class="">So, this document explains in detail what is going on and why it is so complex to set a signal high in software and know what expansion pin has just turned on.</p><h1 id="bdf25322-8ef2-4031-ac93-4e34ae48db8a" class="">Texas Instruments AM572X Sitara Processor</h1><hr id="1acc0828-fe24-4e93-8dca-dcec2b607d23"/><p id="bb78e218-3fb0-4b57-ad22-5e4d59e8c520" class="">To start this journey, the first step is to understand how all of the various AM572X internal signal lines map to the physical external pins (called balls for the type of physical packaging that Sitara processor uses).</p><p id="499c40e8-7ddb-418d-8b05-810973ee3672" class="">For instance, if the processor generates an output video signal, how does the display output signals get from internal signals to an external HDMI (or other) video connector?</p><p id="e4e9b996-3a15-4069-aa9a-4cabb5792bd3" class="">For our example of blinking an LED, we will eventually get to the fact that the software will be using GPIO signals to control the LED.  For now, just understanding what chip signals map to what chip pin is enough.</p><p id="5b050e26-dafd-4c53-af4c-695f73841be3" class="">Generating a signal in software and knowing what it connected to on a Beagle Board AI would be significantly easier if there was a 1:1 mapping of internal signal to physical pins on the chip.  However, this is not even close to realistic and there are way more possible internal signals than there are on any reasonable chip packaging.  Furthermore, based on what the chip is being used for, many of the internal signals are never even used.</p><p id="7333757e-f626-42aa-9617-21319f8a5de8" class="">So, each ball (pin) will have one, and likely many more, internal signals mapped to it.  Only one of the signals mapped to a pin can be used and which of the many possible signals mapped to each pin is actually selected is what is referred to as pin muxing.</p><p id="66514c9c-59d0-4856-872c-40ebe7856666" class="">This brings up back to... the first step in blinking an external LED from software on a Beagle Bona AI is to understand what signals are mapped to which physical ball.</p><h2 id="2455be03-4fa5-4fe1-ad1c-217e7cde7235" class="">Chip Balls (Pins)</h2><hr id="dd2a254c-a62c-4a36-ab19-30fef4487c3d"/><p id="a280c856-76eb-4100-9d6e-2192c60474c5" class="">AM572X Sitara Processors Silicon Revision 2.0 Data Sheet Figure 4-1 shows the ball locations for the 760 plastic ball grid array (PBGA) package.  Rows A - AH and columns 1 - 28.  A ball&#x27;s name is row, followed by column.  For example G20 or AC17.</p><figure id="32086c43-9dd4-44d5-b895-d9559c0f1642" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-26_at_3.53.18_PM.png"><img style="width:384px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-26_at_3.53.18_PM.png"/></a></figure><h2 id="1a4dec79-bdb7-49fb-8fbe-7f321d6ada84" class="">What Signals are possible on each ball (pin)</h2><hr id="650bf5e8-4e80-466c-8da3-30cb5fe807b5"/><p id="632a511a-c5a0-447d-bbbe-8316d0b97199" class="">We need to figure out what internal signals are available on each Sitara ball.  This data is provided by Texas Instruments in the AM572X Sitara Processors Silicon Revision 2.0 Data Sheet available here: </p><ul id="5a128ddf-791e-4738-9bc2-5e677a09a60a" class="bulleted-list"><li>Online: <a href="https://www.ti.com/document-viewer/AM5729/datasheet">https://www.ti.com/document-viewer/AM5729/datasheet</a></li></ul><ul id="917b3052-4795-4be6-a58c-eaaa7deaf5dd" class="bulleted-list"><li>PDF: <a href="https://www.ti.com/lit/ds/symlink/am5729.pdf?ts=1606438819457">https://www.ti.com/lit/ds/symlink/am5729.pdf?ts=1606438819457</a></li></ul><p id="8c6687e9-e36b-45fa-96b1-553023a51f94" class="">There are many ways to view this data.  Chapter 4 breaks the signal to ball mapping into many different tables.  All are very useful and which table to use depends on what information you have and what information you are looking for.  For example are you trying to figure out what signals are connect to a particular ball, or do you know what signal you need and you just want to know what ball it is connected to.</p><p id="acfaae4f-df9e-4c29-9c23-6ca386ba143f" class="">Here are some examples of the data available in the AM572X Sitara Processors Silicon Revision 2.0 Data Sheet</p><p id="dafab8fd-fb36-49bc-acf0-ec1ebcee3b80" class=""><strong>Table 4-2. Ball Characteristics</strong> defines defines the AM572X ball to possible signal name mapping.</p><p id="24343168-5b60-42b8-b981-407dd79aa9a2" class="">Table 4-2 Sample:</p><figure id="96126913-191f-4082-a0c8-03ca12d75063" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-26_at_3.43.47_PM.png"><img style="width:2312px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-26_at_3.43.47_PM.png"/></a></figure><p id="cd2205b7-8011-4035-a960-cbe787703f94" class=""><strong>Table 4-3. Multiplexing Characteristics</strong> is another view of the mapping that has memory address, register name and ball number to possible signal name mapping.
+
+Table 4-3 Sample:</p><figure id="05ac75c2-e409-4c62-a524-0f899046ad05" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-26_at_3.43.01_PM.png"><img style="width:2280px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-26_at_3.43.01_PM.png"/></a></figure><p id="fcc4c60b-2e84-4943-b870-a3f2448789f0" class=""><strong>Tables 4-4</strong> though <strong>4-34</strong> map specific functional systems signal names together and what ball those signals map to.</p><p id="a978a624-61a2-4d2c-a0eb-f22237fab745" class=""><strong>Table 4-23 GPOIs Signal Descriptions</strong> is of particular interest for Beagle Bone AI programming as it provides the General-Purpose Interface (GPIO) signal descriptions.</p><p id="194466e2-c14f-4980-b6c5-74e478a5cfea" class="">Table 4-23 Sample:</p><figure id="2bac1ea4-5403-4f5d-a171-b1a354f1745c" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-26_at_4.15.39_PM.png"><img style="width:1720px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-26_at_4.15.39_PM.png"/></a></figure><h2 id="fabf7da7-fd69-4e11-91e3-db29a402041d" class="">Short detour to discuss GPIO (we will need this)</h2><p id="e36fc067-ebb5-43df-afe8-4c0032215429" class="">The GPIO system is General Purpose Input / Output and is basically an flexible, user-programmable and (mostly) unstructured electrical external connection (pin).  When an LED it plugged it, we can us output to turn it on and off.  When a switch is connected, we can figure out if it is on or off my using and input signal.  More sophisticated devices will implement some structured serial communication protocol, and for those, you can use the UART, USB, or other serial hardware, but for basic devices that don&#x27;t &quot;speak a serial protocol&quot; GPIO is there.</p><p id="c12cab7c-f931-4b2d-befc-3c8b0f1e7fbd" class="">Above, a portion of the table that maps GPIO signals AM5729 connection balls is presented.  Notice for instance, the gpio1_0 signal is connected to ball AD17.</p><p id="7fe46a00-d24a-4711-a124-a6a9fefd67d7" class="">The AM5729 has 8 banks of 32 GPIOs.  The signals used in the tables above use the nomenclature of gpio&lt;bank#&gt;_&lt;gpio#&gt;, so gpio1_0 used above means it it bank 1, GPIO 0 and gpio8_12 would be bank 8 gpio 12.  This is basically relative names, that is gpio 12 of bank 8. </p><p id="2891c455-fb9a-4771-8591-e2a12fa5d61b" class="">GPIOs can also be referenced in absolute terms, the first bank of GPIO would be gpio0, gpio1, gpio2 ... gpio31.  Then the second bank would just continue that numbering, so the second bank would be gpio32, gpio33, gpio34 ... gpio63.</p><h1 id="2f1e5c24-2aaf-40c5-988d-1b1d362e4843" class="">Beagle Board AI P8 and P9 Headers</h1><hr id="95a65278-621c-437f-b167-9833600a5a48"/><h2 id="9c179622-ae81-4cba-b0df-498bc6c90d43" class="">So, where do I plug in the LED?</h2><hr id="d310f5e5-b135-4337-9068-0cab3fd42ba2"/><p id="0eccf9a4-a64e-4213-9e34-781c46a54f11" class="">So, we now know what internal AM572X signals map to the external balls (pins), that still doesn&#x27;t help me know where to actually attach my LED that I want to blink.  The place to attach external electronics to the Beagle Board AI is through the P8 and P9 expansion headers.  The connection points (pins) here are designated &quot;header.pin&quot; so P8.19 or P9.24.</p><p id="dc6d13d1-36ce-4f4d-9518-6936bd1f73aa" class="">However, we are back to the same problem that we have more AM5729 balls than the P8/P9 have.  So, there is an explicit (not configurable) connection from a limited set of the AM5729 balls to the P8/P9 expansion headers, with one small twist.</p><p id="2b2c2037-f93f-442d-8550-a82fdc276cc5" class="">Some of the P8/P9 header pins are connected to 2 different AM5729 balls, in this case these header pins are often referred to as &quot;header.pin[a|b]&quot;, so P8.27a or P9.42b.  For a header pin that has multiple connections, only one of the two AM5729 balls should be active.  That is to say, you choose which of the two balls drive the header pin, by ensuring the AM5729 has only one of the two active.</p><p id="e0624408-15e7-4621-8df0-199b3c312a5e" class="">The BeagleBone AI System Reference Manual includes Section 7.1.1 Connector P8 (<a href="https://github.com/beagleboard/beaglebone-ai/wiki/System-Reference-Manual#connector-p8">https://github.com/beagleboard/beaglebone-ai/wiki/System-Reference-Manual#connector-p8</a>) and 7.1.2 Connector P9 (<a href="https://github.com/beagleboard/beaglebone-ai/wiki/System-Reference-Manual#connector-p9">https://github.com/beagleboard/beaglebone-ai/wiki/System-Reference-Manual#connector-p9</a>).</p><p id="a65b7dbe-68df-4f1a-8f41-7d4fe4342f6f" class="">There are all kinds of really nicely laid out tables / images that show the P8 and P9 connections for the BeagleBone Black, but these same things do not exist for the Beagle Bone AI.  So, here are some attempts to make the header to AM5729 mapping clear.</p><p id="74512bf2-4c09-49b7-9e15-49e56189ec65" class="">P8 Header Pin Out</p><figure id="8b31c0fb-f56c-4088-ad15-d1506b822f00" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-27_at_7.47.32_PM.png"><img style="width:2246px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-27_at_7.47.32_PM.png"/></a></figure><p id="8b20866f-bfeb-45e0-aca3-01c984385277" class="">P9 Header Pin Out</p><figure id="7ad7bd05-d843-461a-98cc-4e80fcb9369d" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-27_at_7.48.05_PM.png"><img style="width:2256px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-27_at_7.48.05_PM.png"/></a></figure><p id="d56d8c41-e833-49cb-95ff-a0705fb1e9db" class="">Every P8 / P9 Header Pin and Mode Available</p><p id="73832f81-3b6a-46a2-b90f-04b3e4deff16" class="">Unreadable, but this is all the info.  Need to setup up a webpage / make spreadsheet available so you can easily &quot;browse&quot; this information.</p><figure id="43f1e3fb-6a5b-4837-a6dd-616123b0f8e5" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-28_at_11.51.33_PM.png"><img style="width:3298px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-28_at_11.51.33_PM.png"/></a></figure><p id="8c6fb2db-59f6-42bc-a0d3-be39d4606185" class="">So, it doesn&#x27;t really matter that much which of these pins to use, to plug in our LED, we just need one that is connected to the a GPIO signal.  So, for now, lets choose P9.15 to connect our LED to.  From the table above we can see that P9.15 is connect to ball AG4 on the AM5729 processor.  The table above also shows that that is the ONLY ball connected to P9.15 and that by default ball AG4 is connected to the gpio3_12 signal.  This was a good choice to start with, because we don&#x27;t have to change the muxmode or worry that a second AM5729 ball being connect to P9.15.  We will deal with these cases later when we are dealing with software access to GPIO.</p><h1 id="ac0b057e-0f0d-4e2e-aed9-344cd8d0326a" class="">Time To Write Some Software</h1><h2 id="9bd96b5a-da71-4a01-9f06-8c761632cc81" class="">Great, I plugged in an LED.  How do I make it blink?</h2><hr id="7e01d737-8f24-4f20-9a07-8110acd8fb7f"/><p id="3d65734e-b068-4783-8b82-26e94b444f79" class="">So, we have figured out that the Beagle Board P9.15 is connected to the AG4 ball of the AM5729 processor.  Furthermore, we understand that that ball (AG4) can be in any one of 15 muxmodes, but by default it is in the muxmode that connects gpio3_12 to AG4 (and thus, to P9.15).</p><p id="ab8e7494-09d9-49f1-87a1-d53acd202658" class="">This means from software, we want to figure out how to turn gpio3_12 on and off, to make our LED flash.  As a first step to an actual program to blink the light, there is a way to turn the LED on and off from the command line, and it is worth looking at that first, then we can write a program to do this for us.</p><p id="1fa1b028-de89-4fbb-84c1-f9c9daa5d3c8" class="">If you look at the /sys/class/gpio directory it should have an entry for each of the GPIO controllers, and two special files export and unexport.</p><p id="48d8e12c-7c08-4041-8585-8bbe41f5bf5c" class="">
+</p><pre id="92e449cc-5561-48a2-9033-847116bcf880" class="code"><code>&gt; cd /sys/class/gpio/
+&gt; ls
+export     gpiochip128  gpiochip192  gpiochip32   gpiochip504  gpiochip96
+gpiochip0  gpiochip160  gpiochip224  gpiochip496  gpiochip64   unexport
+&gt;</code></pre><p id="e4f85515-bd42-4732-b379-49b5f47cdf2c" class="">
+</p><p id="5cb1abcc-fe70-4c13-8700-bee5b53e1fd9" class="">There may be other files listed, but for sure these will be there on the Beagle Bone AI.  </p><p id="320dd9b8-dd77-4d9f-b0dd-46dee671497f" class="">As discussed above, gpio3_12 is one nomenclature for the gpio signals and how the signals are referenced in the TI manuals.</p><p id="f496fe6e-2673-4a0b-8d53-b5f097165155" class="">For this next part, however, we need to know the absolute GPIO number for gpio3_12.  Which in this case is bank = 3 and gpio 12, would be ((3 - 1) * 32) + 12 or 76, so the absolute GPIO we are looking for is gpio76.</p><h2 id="1e30f08c-d44d-4bd7-9c8b-c5688a911d69" class="">Blinking LED from Command line </h2><p id="58dcd70a-97ae-49bf-b4a2-9be3a8114f31" class="">To test out the LED that we connected to P9.15 (gpio3_12 or gpio76) we can do the following, and the LED should come on and then when you issue the last command it will turn back off</p><p id="692e5d9b-0452-42cc-a2af-9f842480d98b" class="">
+</p><pre id="94106182-3d70-4058-b4c3-b5d150c02403" class="code"><code>&gt; echo 76 &gt; export
+&gt; ls
+export  gpiochip0    gpiochip160  gpiochip224  gpiochip496  gpiochip64  unexport
+gpio76  gpiochip128  gpiochip192  gpiochip32   gpiochip504  gpiochip96
+&gt; echo out &gt; gpio76/direction 
+&gt; cat gpio76/direction 
+out
+&gt; echo 1 &gt; gpio76/value 
+&gt; echo 0 &gt; gpio76/value 
+&gt;</code></pre><p id="de1c3a89-8153-4b5c-9446-d22f62a35a13" class="">
+</p><p id="f4630604-8392-4a1f-9564-9dfab5fdd816" class="">Now that we know the LED is connected correctly and we know what GPIO to reference to turn it on and off, lets write a C program to blink our LED.</p><h2 id="f4821247-4972-4932-9f2e-a24d65fd88de" class="">Blinking LED Method 1 - write to /sys/class/gpio</h2><p id="39990e6e-addb-4907-9a5b-208c24ca32fb" class="">The above command line work is really just reading and writing to and from files.  So, method 1 of blinking our LED for a C program will just use basic file I/O calls to read and write from these files.  These examples are not trying to make general systems, they are only trying help understand how to interact with external connected devices.  Therefore many filenames and GPIO channels are simply hardcoded, so you can see a very simple example.</p><p id="ad725b49-6570-4459-b3d0-87cfcaa30852" class="">Method 1 for blinking and LED from C code
+</p><pre id="fd195e4a-9c7e-4443-bd57-776c28f4a25f" class="code"><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;dirent.h&gt;
+
+static const char k_exportFilename[] = &quot;/sys/class/gpio/export&quot;; 
+
+// Example is explictly accessing gpio3_12 or gpio76 which is 
+// connected P9.15 header
+static const int k_gpioNum = 76;
+static const char k_gpioDirectoryname[] = &quot;/sys/class/gpio/gpio76&quot;;
+static const char k_gpioValueFilename[] = &quot;/sys/class/gpio/gpio76/value&quot;;
+static const char k_gpioDirectionFilename[] = &quot;/sys/class/gpio/gpio76/direction&quot;;
+
+int main(int argc, char* argv[])
+{
+		// Code to ensure /sys/class/gpio76 exists and that
+		// /sys/class/gpio76/direction is set to &#x27;out&#x27; has
+		// been removed to keep this brief.
+
+    FILE* gpioValueFilehandle = fopen(k_gpioValueFilename, &quot;w&quot;);
+
+    if (gpioValueFilehandle == NULL)
+    {
+        printf(&quot;could not open gpio value control files\n&quot;);
+        exit(1);
+    }
+    
+    fseek(gpioValueFilehandle, 0, SEEK_SET);
+    fputs(&quot;0&quot;, gpioValueFilehandle);
+    fflush(gpioValueFilehandle);
+
+    for (int i=0; i&lt;10; i++)
+    {
+        fputs(&quot;1&quot;, gpioValueFilehandle);
+        fflush(gpioValueFilehandle);
+
+        usleep(500000);
+
+        fputs(&quot;0&quot;, gpioValueFilehandle);
+        fflush(gpioValueFilehandle);
+
+        usleep(500000);
+    } 
+}</code></pre><p id="2766c679-bf02-4fee-b3fd-9d1916efa748" class="">
+</p><p id="6eb3fdea-fd61-4a6c-ae7f-0df551871510" class="">There is also a newer linux character device (/dev/gpiochip[n]) interface for using gpio in user-space programs, but using the sysfs (/sys/class/gpio) method is more straight forward and is useable from the command line.</p><h2 id="3e4594d4-ac8a-4943-bb8e-3cbe02801946" class="">Blinking LED Method 2 - mmap GPIO registers</h2><p id="5a8223a7-8036-441a-a1d0-31bc9e317a2d" class="">The filesystem based method of accessing GPIO is convenient, but is really just a layer on writing directly to the registers that control the GPIO system.  The addresses of each of these registers is published in AM572x Sitara Processors Technical Reference Manual, section27.6.1 General-Purpose Interface Instance Summary</p><p id="87d4a36d-f103-4984-befe-52fe3a4f79de" class="">Table 27-16. Instance Summary</p><figure id="04a699ce-2ab6-41bc-8bc6-c507dea30f44" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-29_at_11.22.00_PM.png"><img style="width:1520px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-29_at_11.22.00_PM.png"/></a></figure><p id="28efc0b9-5b4d-4ef1-883d-687565aebb38" class="">For each module there are GPIO_SETDATAOUT and GPIO_CLEARDATAOUT registers that will set and clear a GPIO bit.  The addresses for these registers for each GPIO module are given in AM572x Sitara Processors Technical Reference Manual.</p><p id="dd08353b-f197-4433-ba7d-8f16058b1d81" class="">Table 27-68. GPIO_CLEARDATAOUT</p><figure id="7e0c8473-985e-4fa9-9fc4-fc37eb5de5d5" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-29_at_11.28.25_PM.png"><img style="width:1554px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-29_at_11.28.25_PM.png"/></a></figure><p id="e37c2b6a-ea2f-429f-949f-1464d853f3a9" class="">Table 27-70. GPIO_SETDATAOUT</p><figure id="760b1a42-ae71-46f5-87e0-ec84a61799e1" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-29_at_11.28.41_PM.png"><img style="width:1576px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-29_at_11.28.41_PM.png"/></a></figure><p id="9d048a7f-f313-4b9b-860e-9313bbabfbf9" class="">Given that we now know the addresses of this GPIO registers, we can use C mmap, to write to these addresses and control the GPIO.  In this case, we are going to to continue to use gpio3_12, so we will want to set and clear bit 12 in gpio3 module&#x27;s set and clear registers.</p><p id="4caa8a25-e4a1-4929-a51f-5f251b2338be" class="">Now, directly reading and writing physical memory is not something a normal user level program should be able to do.  So, this code will have to be run as root.  The main reason to show this method is that it setups the next method which will do the same direct memory write method, but will do it from the PRU, which should and does have access to the GPIO registers.</p><p id="d3fd68f3-b2bf-47ae-8624-b0cfcdfe3d5d" class="">Method 2 for blinking and LED from C code</p><pre id="8ab12879-6cf7-44fb-b14f-14b1fdff1cbd" class="code"><code>#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/mman.h&gt;
+#include &lt;stdint.h&gt;
+#include &lt;fcntl.h&gt;
+
+// Just hardcode the addresses of the two registers we need.  
+// Could clearly build a nice headerfile for getting to 
+// all gpio banks and registers.
+
+static const uint32_t k_gpio3ModuleAddr = 0x48057000;
+static const uint32_t k_gpioModuleSize = 408;
+
+static const uint32_t k_clearDataOutOffset = 0x190 / 4;
+static const uint32_t k_setDataOutOffset = 0x194 / 4;
+
+static const uint32_t k_gpioPin12 = (0x1 &lt;&lt; 12);
+
+int main(int argc, char* argv[])
+{
+    int memoryhandle;
+
+    volatile unsigned int *gpio3Module = NULL;
+    volatile unsigned int *clearDataOut = NULL;
+    volatile unsigned int *setDataOut = NULL;
+
+    memoryhandle = open(&quot;/dev/mem&quot;, O_RDWR);
+    
+    if (memoryhandle &lt; 0)
+    {
+        printf(&quot;Could not open /dev/mem\n&quot;);
+        exit(1);
+    }
+
+    //  Memory map the GPIO3 registers
+
+    gpio3Module = mmap(0, k_gpioModuleSize, 
+        PROT_WRITE, MAP_SHARED, 
+        memoryhandle, k_gpio3ModuleAddr);
+
+    clearDataOut = gpio3Module + k_clearDataOutOffset;
+    setDataOut = gpio3Module + k_setDataOutOffset;
+
+    if (clearDataOut == MAP_FAILED || setDataOut == MAP_FAILED)
+    {
+        printf(&quot;Could not memory map the gpio clear and set data registers\n&quot;);
+        exit(1);
+    }
+
+    for (int i=0; i&lt;5; i++)
+    {
+        (*setDataOut) = k_gpioPin12;
+        usleep(500000);
+
+        (*clearDataOut) = k_gpioPin12;
+        usleep(500000);
+    } 
+}</code></pre><h1 id="f6ab2772-e49a-42e3-a5ab-fb5e279cad72" class="">Now I want to flash the LED from the PRU</h1><p id="110f4434-0572-44c5-9069-c4d37a06b691" class="">There are two ways to access GPIO from the PRU.  First, the PRU can access the GPIO registers and write to them, just like we did in Method 2 C program.  However, each PRU core also has access to what are called enhanced GPIO, that are specific PRU GPIO signals.</p><h2 id="5c4e5c42-6f45-4309-ba1c-2b5525e3f1b7" class="">Blinking LED Method 3 - PRU share memory GPIO registers</h2><h2 id="2a8b6b43-372d-479b-98b0-c5c54161ec30" class="">Blinking LED Method 4 - PRU Enhanced GPIO</h2><p id="4fb37438-001d-4332-bb6f-3d45aee5ef19" class="">To understand how to use the PRU enhanced GPIO, there are several important tables that need to be referenced from AM572x Sitara Processors Technical Reference Manual and AM572X Sitara Processors Silicon Revision 2.0 Data Sheet.</p><p id="0bcaec60-edaf-4d8a-81c2-4eb04b97a6ea" class="">From AM572x Sitara Processors  Technical Reference Manual:</p><p id="74dde21b-884e-45dc-8538-18ebeec6269d" class="">Table 30-530. PRU-ICSS1 I/O Signals</p><figure id="fd77f532-1222-46e9-8e41-fb2cf21c89c8" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-28_at_6.32.25_PM.png"><img style="width:1510px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-28_at_6.32.25_PM.png"/></a></figure><p id="8f8c38a9-0571-464e-8c6e-4340585ad93b" class="">Table 30-531. PRU-ICSS2 I/O Signals</p><figure id="6c528f15-c3a8-46de-9568-67b0b06c3e9a" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-28_at_6.32.39_PM.png"><img style="width:1518px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-28_at_6.32.39_PM.png"/></a></figure><p id="03cb27bf-0589-4c60-bb39-18a4496dedfc" class="">From AM572X Sitara Processors Silicon Revision 2.0 Data Sheet</p><p id="f7f069e0-fd12-429a-a878-e8af572917f4" class="">Sample from Table 4-26. PRU-ICSS Signal Descriptions</p><figure id="79a1bcce-2fa2-40fa-9ea3-9922f334e96d" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-28_at_6.38.38_PM.png"><img style="width:1452px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-28_at_6.38.38_PM.png"/></a></figure><p id="d9a326b4-55e0-457c-b977-69ffae7721b2" class="">From these tables, we can figure out the enhanced GPIO signal names like pr1_pru0_gpo1 and pr2_pru1_gpi3.  The names of these signals are composed of which PRU unit (1 or 2), which PRU core (0 or 1), if it is input (gpi) or output (gpo) and finally, which enhanced GPIOs (0 - 20).
+So pr1_pru0_gpo1 is PRU unit 1, PRU core 0, is output and is enhanced gpio 1.</p><p id="eec2a033-105e-4275-b3d9-38bba8d58b73" class="">Once we have the signal name, we can figure out what AM5729 processor ball it is connected to.  So for pr1_pru0_gpo1 we can tell it is connected to AH3.  However, as discussed earlier, this is just one of many signals that is connected to that pin.  We need to look at AM572X Sitara Processors Silicon Revision 2.0 Data Sheet, Table 4-3. Multiplexing Characteristics (discussed earlier) to figure out what MUXMODE is used to select pr1_pru0_gpo1 on ball AH3.  
+Turns out the MUXMODE is always 11, 12 or 13 for selecting pru enhanced GPIO.  Specifically for AH3 to select pr1_pru0_gpo1, we need to set AH3 to mode 13 (0xD). </p><h1 id="c8486ba2-6af2-4608-a54d-fe93277b992f" class="">The signal I need is not the default, now what?</h1><h2 id="5d95f6d3-fbf1-461b-a185-35f9f76883dd" class="">What is MUXMODE?</h2><hr id="1eabb677-d21b-4b38-b221-0ec06d2eb875"/><p id="9d5d3717-6771-4dd7-89fa-55f4c5894c51" class="">So in several tables referenced above, you will notice that there are many signals that map to the same ball, and they are listed under &quot;MUXMODE&quot;.</p><h2 id="0aa5102d-eb63-45bb-9b29-e9252710249d" class="">How do Choose Which Signal is used on which ball?</h2><hr id="f650285c-55f5-41b7-9f5b-e24ab4e139bf"/><p id="dc53225d-d846-4472-833d-f2c282377a67" class="">AM572x Sitara Processors Technical Reference Manual figure 18.4.6 defines the configuration register for every (most) pins</p><figure id="01bee914-73b1-49aa-a72a-cb7621556a37" class="image"><a href="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-26_at_2.33.24_PM.png"><img style="width:1484px" src="DetanglingBeagleBoneAIPinMultiplexing/Screen_Shot_2020-11-26_at_2.33.24_PM.png"/></a></figure><p id="ba213a72-18c4-405d-a80f-feef0e9bf290" class="">&lt;LOTS MORE HERE, on how to set these bits and select the muxmode  you want&gt;
+&lt;The default MUXMODE is important, because if you can find a pin to use and it is in the right muxmode to get the signal you want, you can acatully use system as is&gt;</p><p id="801b7f8a-6287-4960-9634-bc28439c3045" class="">&lt;Also this is were device tree comes in so we can change the default&gt;</p></div></article></body></html>
